@@ -1,4 +1,4 @@
-function GameManager(size, AI, InputManager, Actuator, StorageManager) {
+function GameManager(size, InputManager, Actuator, StorageManager) {
   this.events= {};
   this.size           = size; // Size of the grid
   this.inputManager   = new InputManager;
