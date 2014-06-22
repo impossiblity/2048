@@ -1,17 +1,38 @@
-function GameManager(size, InputManager, Actuator, StorageManager) {
+function GameManager(size, AI, Actuator, StorageManager) {
+  this.events= {};
   this.size           = size; // Size of the grid
-  this.inputManager   = new InputManager;
+  this.ai   = new AI(thisbi);
   this.storageManager = new StorageManager;
   this.actuator       = new Actuator;
 
   this.startTiles     = 2;
 
-  this.inputManager.on("move", this.move.bind(this));
-  this.inputManager.on("restart", this.restart.bind(this));
-  this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
-
+  this.ai.on("move", this.move.bind(this));
+  
   this.setup();
+  this.run();
 }
+
+GameManager.prototype.run = function(){
+  window.setTimeout(move(this.ai.action),1000);
+}
+
+GameManager.prototype.on = function (event, callback) {
+  if (!this.events[event]) {
+    this.events[event] = [];
+  }
+  this.events[event].push(callback);
+};
+
+GameManager.prototype.emit = function (event, data1, data2) {
+  var callbacks = this.events[event];
+  if (callbacks) {
+    callbacks.forEach(function (callback) {
+      callback(data1, data2);
+    });
+  }
+};
+
 
 // Restart the game
 GameManager.prototype.restart = function () {
@@ -184,11 +205,15 @@ GameManager.prototype.move = function (direction) {
 
     if (!this.movesAvailable()) {
       this.over = true; // Game over!
+      this.retScore = self.score;
     }
+    else
+      this.retScore = 0;
 
     this.actuate();
   }
-};
+  this.emit("resolve", retScore, this.grid.serialize());
+}; 
 
 // Get the vector representing the chosen direction
 GameManager.prototype.getVector = function (direction) {
