@@ -212,7 +212,7 @@ GameManager.prototype.move = function (direction) {
 
     this.actuate();
   }
-  this.emit("resolve", retScore, this.grid.serialize());
+  this.emit("feedback", retScore, this.grid.serialize());
 }; 
 
 // Get the vector representing the chosen direction
